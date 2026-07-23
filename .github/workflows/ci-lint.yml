@@ -1,0 +1,56 @@
+name: ci-lint
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.13"]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run codespell
+        uses: codespell-project/actions-codespell@v2
+        with:
+          path: "src"
+          ignore_words_file: .codespell.ignore-words
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked --only-group dev
+
+      # Update output format to enable automatic inline annotations.
+      - name: Run Ruff
+        run: |
+          uv run --no-sync ruff check --output-format=github src
+          uv run --no-sync ruff format --check src
+
+      - name: Verify no uncommitted changes
+        run: |
+          echo "Checking for uncommitted changes in the workspace..."
+          if ! git diff --exit-code --stat; then
+            echo "::error::Error: The linting process must not create uncommitted files"
+            echo "Hint: If you recently updated dependencies or generated files, make sure to commit those changes"
+            echo "Hint: Additionally, check that uv version for pre-commit and ci-lint.yml match and run pre-commit locally"
+            exit 1
+          fi
