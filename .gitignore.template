@@ -1,0 +1,30 @@
+# Copy this file to .gitignore to put it in effect:
+#   cp .gitignore.template .gitignore
+# .gitignore itself is intentionally untracked.
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Test / lint caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+
+# Environments
+.venv/
+.direnv/
+
+# Tooling
+.claude/
+.envrc.secrets
+
+# Runtime cache output
+cache/
