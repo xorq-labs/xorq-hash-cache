@@ -21,12 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Run codespell
-        uses: codespell-project/actions-codespell@v2
-        with:
-          path: "src"
-          ignore_words_file: .codespell.ignore-words
-
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
@@ -39,18 +33,16 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked --only-group dev
 
-      # Update output format to enable automatic inline annotations.
-      - name: Run Ruff
-        run: |
-          uv run --no-sync ruff check --output-format=github src
-          uv run --no-sync ruff format --check src
+      - name: Cache pre-commit environments
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
 
-      - name: Verify no uncommitted changes
-        run: |
-          echo "Checking for uncommitted changes in the workspace..."
-          if ! git diff --exit-code --stat; then
-            echo "::error::Error: The linting process must not create uncommitted files"
-            echo "Hint: If you recently updated dependencies or generated files, make sure to commit those changes"
-            echo "Hint: Additionally, check that uv version for pre-commit and ci-lint.yml match and run pre-commit locally"
-            exit 1
-          fi
+      # .pre-commit-config.yaml is the single source of truth for lint tool
+      # versions (ruff, codespell). `uv sync --locked` above already guards
+      # lockfile drift, so the generative uv hooks are skipped here.
+      - name: Run pre-commit
+        env:
+          SKIP: uv-lock,uv-export
+        run: uv run --no-sync pre-commit run --all-files --show-diff-on-failure
