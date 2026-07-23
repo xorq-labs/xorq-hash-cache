@@ -38,5 +38,4 @@ jobs:
         timeout-minutes: 10
         run: >
           uv run --no-sync pytest
-          --import-mode=importlib
           -v --durations=20
