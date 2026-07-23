@@ -7,10 +7,9 @@ requires-python = ">=3.10"
 dependencies = [
     "attrs>=23.0",
     "cloudpickle>=3.0",
-    "dask>=2025.1.0",
-    "pandas>=1.4",
     "toolz>=0.10.0",
     "urllib3>=2.2.3",
+    "xorq-dasher>=0.1.1",
 ]
 
 [build-system]
