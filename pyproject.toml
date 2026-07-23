@@ -24,3 +24,7 @@ dev = [
     "pre-commit>=4.2.0",
     "pytest>=8.3.5",
 ]
+
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+testpaths = ["src"]
