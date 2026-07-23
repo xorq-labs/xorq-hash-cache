@@ -5,7 +5,7 @@ description = "python utility for caching function results"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.14"
 dependencies = [
     "attrs>=23.0",
     "cloudpickle>=3.0",
@@ -22,6 +22,5 @@ build-backend = "hatchling.build"
 dev = [
     "ipython>=8.0.0",
     "pre-commit>=4.2.0",
-    "ruff>=0.6.7",
     "pytest>=8.3.5",
 ]
