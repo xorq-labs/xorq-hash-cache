@@ -1,4 +1,5 @@
 import datetime
+import os
 from pathlib import Path
 
 import pytest
@@ -62,6 +63,11 @@ def test_ttl(tmpdir, ttl, should_be_expired):
     assert get_args_kwargs(f, *args, **kwargs) == hcp.args_kwargs
 
     if should_be_expired:
+        # Backdate the mtime well past the ttl; comparing a freshly-written
+        # mtime against now() is racy for a millisecond ttl.
+        path = hcp.hash_cached.serder.get_path(hcp.stem_path)
+        past = datetime.datetime.now().timestamp() - 3600
+        os.utime(path, (past, past))
         assert hcp.is_expired
         assert g.is_expired(hcp.stem_path)
     else:
