@@ -8,7 +8,6 @@ from functools import (
 )
 
 import cloudpickle
-import dask.base
 import toolz
 from attrs import (
     field,
@@ -20,6 +19,7 @@ from attrs.validators import (
     optional,
 )
 
+from xorq_hash_cache.hasher import tokenize
 from xorq_hash_cache.utils.inspect_utils import (
     get_arguments,
     get_args_kwargs,
@@ -101,7 +101,7 @@ class Serder:
 
 
 def get_path_prefix(path, f):
-    tokenized_f = dask.base.tokenize(f)
+    tokenized_f = tokenize(f)
     path_prefix = Path(path).joinpath(
         ".".join((f.__module__, getattr(f, "__qualname__", f.__name__))),
         tokenized_f,
@@ -111,7 +111,7 @@ def get_path_prefix(path, f):
 
 def calc_hash_stem(f, *args, **kwargs):
     arguments = get_arguments(f, *args, **kwargs)
-    stem = dask.base.tokenize(f, **arguments)
+    stem = tokenize(f, arguments)
     return stem
 
 

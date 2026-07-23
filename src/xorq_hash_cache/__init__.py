@@ -1,1 +1,1 @@
-import xorq_hash_cache.dask_normalize  # noqa: F401
+import xorq_hash_cache.hasher  # noqa: F401
